@@ -95,7 +95,7 @@ public class EventCreator {
 		System.out.print("Enter calendar description(Empty not allowed):");
 		/* Read user data from command line using "stringReader" function */
 		cDesc += stringReader(sc);
-		System.out.print("Enter evnet summary for title(Empty not allowed):");
+		System.out.print("Enter event summary for title(Empty not allowed):");
 		/* Read user data from command line using "stringReader" function */
 		eSummary += stringReader(sc);
 
@@ -110,7 +110,7 @@ public class EventCreator {
 		/* add date and time separator "T" */
 		dtStart += "T";
 		/* event start time */
-		System.out.print("Enter satar");
+		System.out.print("Enter start ");
 		/* Read user data from command line using "timeReader" function */
 		String startTime = timeReader(sc);
 		/* Remove time separator */
@@ -148,7 +148,7 @@ public class EventCreator {
 		if (!isValidEvent(startDate, startTime, endDate, endTime)) {
 			/* print out information */
 			System.out.print(
-					" ->>> There is a problem to make an event because your start and end date time is not synchronizing.\n");
+					" ->>> There is a problem, your start and end date time are not synchronizing.\n");
 			System.out.print("** Program halt! **");
 
 			/* program terminate */
@@ -170,8 +170,10 @@ public class EventCreator {
 		/*
 		 * print statements are contained in class reader
 		 */
-		eClass += classReader(sc);
-
+		if(makeOptional(sc,"privacy") ) { //see method
+			eClass += classReader(sc);
+		}
+		
 		/*
 		 * Reader user input text for information using "stringReader" function
 		 */
@@ -181,9 +183,12 @@ public class EventCreator {
 		/*
 		 * Read two float numbers from command line and return combined string
 		 * the value
-		 */
-		System.out.print("Geographical position of your event.\n");
-		eGeo += floatReader(sc);
+		 */	
+		if(makeOptional(sc,"geographical position") ) { //see method
+			System.out.print("Geographical position of your event.\n");
+			eGeo += floatReader(sc);
+		}
+		
 
 		/*
 		 * Reader user input text for information using "stringReader" function
@@ -216,8 +221,8 @@ public class EventCreator {
 		Boolean isEmpty = true;
 
 		while (isEmpty) {
-			userIn = sc.next();
-			if (userIn != null) {
+			userIn = sc.nextLine();
+			if (userIn != null && !userIn.equals("") ) {
 				isEmpty = false;
 			}
 		}
@@ -245,10 +250,10 @@ public class EventCreator {
 				} else {
 					/* Reset input data */
 					dateInput = null;
-					System.out.print("->>> The date you input is not valid! -\n- Please enter a valid ");
+					System.out.print("->>> The date you inputted is not valid! -\n- Please enter a valid ");
 				}
 			} else {
-				System.out.print("->>> The date you input is not valid! -\n- Please enter the valid ");
+				System.out.print("->>> The date you inputted is not valid! -\n- Please enter the valid ");
 			}
 		}
 		return dateInput;
@@ -270,11 +275,11 @@ public class EventCreator {
 					isEmpty = false;
 				} else {
 					timeInput = null;
-					System.out.print("->>> Tha time you input is not valid! -\n- Please enter a valid ");
+					System.out.print("->>> The time you inputted is not valid! -\n- Please enter a valid ");
 				}
 
 			} else {
-				System.out.print("->>> The time you input is not valid! -\n- Plaese enter a valid");
+				System.out.print("->>> The time you inputted is not valid! -\n- Plaese enter a valid");
 			}
 		}
 		return timeInput;
@@ -397,8 +402,13 @@ public class EventCreator {
 			// bw.write(eLastMod + "\n");
 
 			/* added two new properties */
-			bw.write(eGeo + "\n");
-			bw.write(eClass + "\n");
+			if(!eGeo.equals("GEO:") ) {   //if empty does not add
+				bw.write(eGeo + "\n");
+			}
+			
+			if(!eClass.equals("CLASS:") ) {
+			    bw.write(eClass + "\n");
+			}
 
 			/* Static DO NOT EARASE! */
 			bw.write(end + "VEVENT" + "\n");
@@ -411,6 +421,43 @@ public class EventCreator {
 
 	}
 
+	/**
+	 * Makes adding certain fields optional
+	 * @param scan
+	 * @param field
+	 * @return (1) true if the user enters 1
+	 *         (2) false if the user enters 2
+	 */
+	public static boolean makeOptional(Scanner scan,String field) {
+		System.out.println("Would you like to add a " + field + " field ");
+		System.out.println("Enter: 1 for Yes");
+		System.out.println("Enter: 2 for No");
+		String option;
+		do{
+			option = scan.nextLine().trim();
+		}
+		while(validateOption(option) );
+		if(option.equals("1") ) {
+			return true;
+		}
+		else {		
+		    return false;
+		}
+	}
+	/**
+	 * Checks if values are 1 or 2
+	 * @param input
+	 * @return (1) true if the given input is 1 or 2
+	 *         (2) false if the given input is not 1 or 2
+	 */
+	private static boolean validateOption(String input) {
+		if(input.equals("1") || input.equals("2") ) {
+			System.out.println("Error, enter 1 or 2");
+			return false;
+		}
+		return true;
+	}
+	
 	// TODO Later
 	/**
 	 * Modify an event
@@ -621,7 +668,7 @@ public class EventCreator {
 			return true;
 		}
 		else {  
-			System.out.println("- The setting you input is not valid! -");			
+			System.out.println("- The setting you inputted is not valid! -");			
 			return false;
 		}
 	}
